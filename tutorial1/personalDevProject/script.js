@@ -62,7 +62,7 @@ class Paddle {
     
     paddleWidth = 50;
     paddleHeight = 10;
-    paddleX = 300;
+    paddleMid = 0
     paddleY = CANVAS_HEIGHT - 50;
     mouseX = 0;
     mouseY = 0;
@@ -94,6 +94,7 @@ class Paddle {
         console.log(this.mouseX, left, right);
         if (this.mouseX - left > 0 - this.paddleWidth && this.mouseX - right < CANVAS_WIDTH) {
             this.draw(this.mouseX - (left + (this.paddleWidth / 2)));
+            this.paddleMid = this.mouseX - (left + (this.paddleWidth / 2));
         }
     }
 }
@@ -101,6 +102,7 @@ class Paddle {
 let ball = new Ball();
 let paddle = new Paddle();
 paddle.listenToMouse();
+console.log(paddle.paddleX);
 
 function animate() {
     
