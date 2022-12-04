@@ -1,5 +1,4 @@
 #canvas1 {
-    border: 5px solid black;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -11,4 +10,9 @@
     top: 50px;
     z-index: 10;
     left: 50px;
+    transform: translateX(50%);
+}
+
+.controls, select, option {
+    font-size: 25px;
 }
