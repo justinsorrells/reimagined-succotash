@@ -1,0 +1,26 @@
+body {
+    background: black;
+}
+
+#container {
+    font-size: 25px;
+    height: 700px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+}
+
+canvas {
+    border: 3px solid white;
+    position: relative;
+}
+
+#slider { 
+    width: 100%;
+}
+
+p {
+    color: white;
+}
