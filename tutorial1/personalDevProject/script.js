@@ -5,6 +5,10 @@ const ctx = canvas.getContext("2d");
 // Declare a canvas height and width
 const CANVAS_WIDTH = canvas.width = 600;
 const CANVAS_HEIGHT = canvas.height = 600;
+// Target the gameStatus id
+const gameStatus = document.querySelectorAll('span');
+// Target the game score
+const score = document.querySelector('#score');
 // Describe a ball class
 class Ball {
 
@@ -19,7 +23,7 @@ class Ball {
     BounceY = 0;
     // Declare rate of change variables to alter the ball's slope
     dX = 0;
-    dY = 2;
+    dY = 5;
     // Declare a change slope method so that we can change the x or y slope at anytime
     changeSlope(axis, amount) {
         if (axis === "x") {
@@ -51,8 +55,9 @@ class Ball {
         this.moveY();
         ctx.fillStyle = "black";
         ctx.beginPath();
-        ctx.arc(this.FrameX, this.FrameY, 6, 0, Math.PI * 2, true);
+        ctx.arc(this.FrameX, this.FrameY, this.ballWidth, 0, Math.PI * 2, true);
         ctx.fill();
+        ctx.closePath();
     }
 
     // Change the direction of x if there is a collision with a border
@@ -80,6 +85,81 @@ class Ball {
             this.FrameY = this.FrameY - this.dY;
         }
     }
+}
+
+// Declare brick array, width, height, and count
+let brickArr = [];
+let brickWidth = 70;
+let brickHeight = 15;
+let bricks = 0;
+let userScore = 0;
+
+// Check if the ball runs into the bricks
+// Pretty much the same logic as the collision detection within the paddle class, but
+// This needed additional brick logic to remove them and update the brick count
+function detectCollisionWithBall(ball, brick) {
+    let ballMid = ball.FrameX + (ball.ballWidth / 2)
+    let brickMid = brick["x"] + (brickWidth / 2);
+    if (brick["x"] <= (ball.FrameX) &&
+        brick["x"] + brickWidth >= (ball.FrameX + ball.ballWidth) &&
+        (brick["y"] == (ball.FrameY + ball.ballHeight) || (brick["y"] + brickHeight) == ball.FrameY)
+        ) {
+            brick["status"] = 0;
+            bricks--;
+            userScore++;
+            UpdateScore();
+            let dX = ((ballMid - brickMid) / 10) * 1.36;
+            ball.changeSlope("x", dX);
+            ball.BounceY = ball.BounceY == 0 ? 1 : 0;
+        } 
+
+}
+// Check to see if the brick count has reached 0
+// If it has then reveal the game messages and declare us winners
+function checkWin() {
+    if (bricks == 0) {
+        gameStatus.forEach((key) => {
+            console.log(key);
+            key.style.visibility = 'visible';
+        })
+        window.addEventListener('keydown', function(event) {
+            console.log(event.key);
+            if (event.key == 'r' || event.key == 'R') {
+                document.location.reload();
+            }
+        })
+    }
+}
+// Create an array of bricks based on the brickHeight/brickWidth vs the canvasHeight/canvasWidth
+function createBrickArray() {
+    let arr = [];
+    for (let j = 20; j < 100; j = j + brickHeight + 10) {
+        for (let i = 25; i < CANVAS_WIDTH; i = i + brickWidth + 50) {
+            arr.push({"x": i, "y": j, "status": 1});
+            bricks++;
+        }
+    }
+    return arr;
+}
+// Draw the brick based on the input x and y coordinates
+function draw(x, y) {
+    ctx.fillStyle = "black";
+    ctx.fillRect(x, y, brickWidth, brickHeight);
+    ctx.fill();
+}
+// Iterate over the brick array and draw all of the bricks
+function drawBricks(arr) {
+    arr.forEach((key, index) => {
+            if (key["status"] == 1) {
+                draw(key["x"], key["y"]);
+                detectCollisionWithBall(ball, key, index);
+                checkWin(brickArr);
+            }
+    })
+}
+
+function UpdateScore() {
+    score.textContent = "Score: " + userScore;
 }
 
 // Describe a Paddle class
@@ -161,16 +241,23 @@ let ball = new Ball();
 let paddle = new Paddle();
 // Immediately start listening to the user's mouse for movement
 paddle.listenToMouse();
+// Store the bricks in the brickArr and draw the bricks
+brickArr = createBrickArray(brickArr);
+drawBricks(brickArr);
+
 // Declare our main/animate function
 function animate() {
     // Clear the rectangle every call
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
     // Call the move method on the ball and paddle to grant movement to both
     ball.move();
     paddle.move();
     // Call the paddle method to detect collisions every move
     paddle.detectCollisionWithBall(ball);
     // Animate the animate function
+    drawBricks(brickArr);
+
     requestAnimationFrame(animate);
 }
 // Call the animate function to tie it all together
