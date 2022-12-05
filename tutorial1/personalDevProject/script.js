@@ -187,7 +187,7 @@ class Paddle {
         let paddleMid = this.paddleLeft + (this.paddleWidth / 2);
         if (this.paddleLeft <= (ball.FrameX) &&
             this.paddleRight >= (ball.FrameX + ball.ballWidth) &&
-            (this.paddleY == (ball.FrameY + ball.ballHeight) || (this.paddleY + this.paddleHeight) == ball.FrameY)
+            (this.paddleY == (ball.FrameY + ball.ballHeight + ball.dY) || (this.paddleY + this.paddleHeight) == ball.FrameY + ball.dY)
             ) {
                 let dX = ((ballMid - paddleMid) / 10) * 1.36;
                 ball.changeSlope("x", dX);
