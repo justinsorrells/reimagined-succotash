@@ -3,7 +3,8 @@ const ctx = canvas.getContext("2d");
 const CANVAS_WIDTH = canvas.width = 800;
 const CANVAS_HEIGHT = canvas.height = 700;
 
-const status = document.querySelector("#status");
+const gameStatus = document.querySelector("#gameStatus");
+const score = document.querySelector("#scoreNum");
 
 const backgroundLayer1 = new Image();
 backgroundLayer1.src = "clouds.png";
@@ -125,6 +126,7 @@ let enemy = new obstacle(obj, 640, 565);
 let gameFrame = 0;
 let jumpFlag = 0;
 let fallFlag = 0;
+let loseFlag = 0;
 
 window.addEventListener('keydown', function(e) {
     if (e.code == "Space" || e.code == "ArrowUp") {
@@ -139,34 +141,43 @@ function detectCollision(player, obstacle) {
     let playerX = 0;
     // console.log(playerX, obstacle.x);
     if (player.y >= topOfObstacle &&
-        ((playerX <= obstacle.x && obstacle.x <= playerX + player.characterWidth) || 
+        ((playerX <= obstacle.x && obstacle.x <= playerX + (player.characterWidth / 2)) || 
         (obstacle.x <= playerX && playerX <= obstacle.x + obstacle.width))) {
-            status.style.display = "block";
+            console.log(obstacle.x, obstacle.width);
+            console.log(playerX, player.characterWidth)
+            gameStatus.style.visibility = "visible";
+            loseFlag = 1;
         }
 }
 
+let playerScore = 0;
+
 function animate() {
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    ctx.drawImage(backgroundLayer3, 720, -220, 900, 350);
-    layer1.draw();
-    layer1.update();
-    layer2.draw();
-    layer2.update();
-    player.draw();
-    enemy.draw();
-    enemy.move(); 
-    if (jumpFlag == 1 && fallFlag != 1) {
-        player.jump();
+    if (loseFlag == 0) {
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.drawImage(backgroundLayer3, 720, -220, 900, 350);
+        layer1.draw();
+        layer1.update();
+        layer2.draw();
+        layer2.update();
+        player.draw();
+        enemy.draw();
+        enemy.move(); 
+        if (jumpFlag == 1 && fallFlag != 1) {
+            player.jump();
+        }
+        if (fallFlag == 1 && jumpFlag != 1) {
+            player.fall();
+        }
+        if (gameFrame % 6 == 0) {
+            playerScore++;
+            score.textContent = playerScore;
+            player.run();
+        }
+        detectCollision(player, enemy);
+        gameFrame++;
+        requestAnimationFrame(animate);
     }
-    if (fallFlag == 1 && jumpFlag != 1) {
-        player.fall();
-    }
-    if (gameFrame % 6 == 0) {
-        player.run();
-    }
-    detectCollision(player, enemy);
-    gameFrame++;
-    requestAnimationFrame(animate);
 }
 //     ctx.drawImage(obj, 0, 0, 400, 400, 670, 505, 150, 200);
 animate();
