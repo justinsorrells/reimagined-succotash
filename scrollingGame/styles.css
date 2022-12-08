@@ -16,9 +16,18 @@ body {
     position: relative
 }
 
-#status {
+#gameStatus, #score {
     color: #ffffff;
     text-align: center;
-    font-size: 40px;
-    display: none;
+    font-size: 20px;
+}
+
+#gameStatus {
+    visibility: hidden;
+}
+
+.flexRow { 
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
